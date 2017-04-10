@@ -47,7 +47,6 @@ namespace UglyTrivia
         public bool add(String playerName)
         {
 
-
             players.Add(playerName);
             places[howManyPlayers()] = 0;
             purses[howManyPlayers()] = 0;
@@ -75,14 +74,7 @@ namespace UglyTrivia
                     isGettingOutOfPenaltyBox = true;
 
                     Display(players[currentPlayer] + " is getting out of the penalty box");
-                    places[currentPlayer] = places[currentPlayer] + roll;
-                    if (places[currentPlayer] > 11) places[currentPlayer] = places[currentPlayer] - 12;
-
-                    Display(players[currentPlayer]
-                            + "'s new location is "
-                            + places[currentPlayer]);
-                    Display("The category is " + currentCategory());
-                    askQuestion();
+                    AskNextQuestion(roll);
                 }
                 else
                 {
@@ -93,17 +85,21 @@ namespace UglyTrivia
             }
             else
             {
-
-                places[currentPlayer] = places[currentPlayer] + roll;
-                if (places[currentPlayer] > 11) places[currentPlayer] = places[currentPlayer] - 12;
-
-                Display(players[currentPlayer]
-                        + "'s new location is "
-                        + places[currentPlayer]);
-                Display("The category is " + currentCategory());
-                askQuestion();
+                AskNextQuestion(roll);
             }
 
+        }
+
+        private void AskNextQuestion(int roll)
+        {
+            places[currentPlayer] = places[currentPlayer] + roll;
+            if (places[currentPlayer] > 11) places[currentPlayer] = places[currentPlayer] - 12;
+
+            Display(players[currentPlayer]
+                    + "'s new location is "
+                    + places[currentPlayer]);
+            Display("The category is " + currentCategory());
+            askQuestion();
         }
 
         private void askQuestion()
@@ -164,20 +160,14 @@ namespace UglyTrivia
 
                     return winner;
                 }
-                else
-                {
-                    currentPlayer++;
-                    if (currentPlayer == players.Count) currentPlayer = 0;
-                    return true;
-                }
 
-
-
+                currentPlayer++;
+                if (currentPlayer == players.Count) currentPlayer = 0;
+                return true;
             }
             else
             {
-
-                Display("Answer was corrent!!!!");
+                Display("Answer was correct!!!!");
                 purses[currentPlayer]++;
                 Display(players[currentPlayer]
                         + " now has "
