@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TriviaX")]
+[assembly: AssemblyTitle("Trivia.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TriviaX")]
+[assembly: AssemblyProduct("Trivia.Test")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("92b5a5c5-8051-45dc-9f88-9d16de2f9e25")]
+[assembly: Guid("b7fc3d0c-1565-4949-be72-258bfb1dd2ec")]
 
 // Version information for an assembly consists of the following four values:
 //
