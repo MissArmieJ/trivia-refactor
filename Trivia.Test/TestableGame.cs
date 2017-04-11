@@ -1,5 +1,3 @@
-using UglyTrivia;
-
 namespace Trivia.Test
 {
     public class TestableGame : Game

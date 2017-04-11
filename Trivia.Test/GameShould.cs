@@ -1,3 +1,4 @@
+using System;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -22,7 +23,7 @@ namespace Trivia.Test
         [Test]
         public void add_a_player_()
         {
-            _game.add(PlayerJohn);
+            _game.AddPlayer(PlayerJohn);
 
             _console.Received().WriteLine(PlayerJohn + " was added");
             _console.Received().WriteLine("They are player number 1");
@@ -31,8 +32,8 @@ namespace Trivia.Test
         [Test]
         public void add_2_players()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
             Received.InOrder(
                 () =>
@@ -45,29 +46,41 @@ namespace Trivia.Test
         }
 
         [Test]
+        public void cannot_add_more_than_5_players()
+        {
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
+            _game.AddPlayer("3");
+            _game.AddPlayer("4");
+            _game.AddPlayer("5");
+
+            Assert.Throws<IndexOutOfRangeException>(() => _game.AddPlayer("6"));
+        }
+
+        [Test]
         public void not_be_playable_if_it_has_only_1_player()
         {
-            _game.add(PlayerJohn);
+            _game.AddPlayer(PlayerJohn);
 
-            Assert.That(_game.isPlayable, Is.False);
+            Assert.That(_game.IsPlayable, Is.False);
         }
 
         [Test]
         public void be_playable_if_it_has_2_players()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            Assert.That(_game.isPlayable, Is.True);
+            Assert.That(_game.IsPlayable, Is.True);
         }
 
         [Test]
         public void on_a_roll_display_current_player_name()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(3);
+            _game.Roll(3);
 
             _console.Received().WriteLine(PlayerJohn + " is the current player");
         }
@@ -75,10 +88,10 @@ namespace Trivia.Test
         [Test]
         public void on_a_roll_display_roll_number()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(3);
+            _game.Roll(3);
 
             _console.Received().WriteLine("They have rolled a 3");
         }
@@ -89,10 +102,10 @@ namespace Trivia.Test
         [TestCase(11, 11)]
         public void on_a_roll_displayed_current_player_location_is_the_roll_when_roll_is_less_then_twelve(int roll, int expectedLocation)
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(roll);
+            _game.Roll(roll);
 
             _console.Received().WriteLine(PlayerJohn + "'s new location is " + expectedLocation);
         }
@@ -102,14 +115,14 @@ namespace Trivia.Test
         [TestCase(11, 11)]
         public void on_second_roll_after_wrong_answer_when_roll_is_odd_current_player_location_is_the_roll_when_roll_is_less_then_twelve(int roll, int expectedLocation)
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(roll);
-            _game.wrongAnswer();
-            _game.roll(roll);
-            _game.wrongAnswer();
-            _game.roll(roll);
+            _game.Roll(roll);
+            _game.WrongAnswer();
+            _game.Roll(roll);
+            _game.WrongAnswer();
+            _game.Roll(roll);
 
             _console.Received().WriteLine(PlayerJohn + "'s new location is " + expectedLocation);
         }
@@ -120,10 +133,10 @@ namespace Trivia.Test
         [TestCase(24, 12)]
         public void on_a_roll_above_eleven_displayed_current_player_location_is_the_roll_minus_12(int roll, int expectedLocation)
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(roll);
+            _game.Roll(roll);
 
             _console.Received().WriteLine(PlayerJohn + "'s new location is " + expectedLocation);
         }
@@ -132,14 +145,14 @@ namespace Trivia.Test
         [TestCase(25, 13)]
         public void on_second_roll_after_wrong_answer_when_roll_is_odd_and_above_eleven_current_player_location_is_theroll_minus_12(int roll, int expectedLocation)
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(roll);
-            _game.wrongAnswer();
-            _game.roll(roll);
-            _game.wrongAnswer();
-            _game.roll(roll);
+            _game.Roll(roll);
+            _game.WrongAnswer();
+            _game.Roll(roll);
+            _game.WrongAnswer();
+            _game.Roll(roll);
 
             _console.Received().WriteLine(PlayerJohn + "'s new location is " + expectedLocation);
         }
@@ -159,10 +172,10 @@ namespace Trivia.Test
         [TestCase(12, "Pop")]
         public void on_a_roll_display_category(int roll, string expectedCategory)
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(roll);
+            _game.Roll(roll);
 
             _console.Received().WriteLine("The category is " + expectedCategory);
         }
@@ -182,10 +195,10 @@ namespace Trivia.Test
         [TestCase(12, "Pop")]
         public void on_first_roll_display_question_for_category(int roll, string expectedCategoryOnFirstRoll)
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(roll);
+            _game.Roll(roll);
 
             _console.Received().WriteLine(expectedCategoryOnFirstRoll + " Question 0");
         }
@@ -206,11 +219,11 @@ namespace Trivia.Test
         [TestCase(12, "Pop", "Pop")]
         public void on_second_roll_display_question_for_new_category(int roll, string expectedCategoryOnFirstRoll, string expectedCategoryOnSecondRoll)
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(roll);
-            _game.roll(roll);
+            _game.Roll(roll);
+            _game.Roll(roll);
 
             _console.Received().WriteLine(expectedCategoryOnFirstRoll + " Question 0");
             _console.Received().WriteLine(expectedCategoryOnSecondRoll + " Question 0");
@@ -219,11 +232,11 @@ namespace Trivia.Test
         [Test]
         public void on_wrong_answer_display_wrong_answer_and_penalty_box_messages()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(1);
-            _game.wrongAnswer();
+            _game.Roll(1);
+            _game.WrongAnswer();
 
             _console.Received().WriteLine("Question was incorrectly answered");
             _console.Received().WriteLine(PlayerJohn +" was sent to the penalty box");
@@ -232,12 +245,12 @@ namespace Trivia.Test
         [Test]
         public void on_wrong_answer_change_current_player()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(1);
-            _game.wrongAnswer();
-            _game.roll(1);
+            _game.Roll(1);
+            _game.WrongAnswer();
+            _game.Roll(1);
 
             Received.InOrder(
              () =>
@@ -250,14 +263,14 @@ namespace Trivia.Test
         [Test]
         public void on_second_roll_after_wrong_answer_when_roll_is_even_player_stays_in_penalty_box()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(1);
-            _game.wrongAnswer();
-            _game.roll(1);
-            _game.wrongAnswer();
-            _game.roll(2);
+            _game.Roll(1);
+            _game.WrongAnswer();
+            _game.Roll(1);
+            _game.WrongAnswer();
+            _game.Roll(2);
 
             _console.Received().WriteLine(PlayerJohn + " is not getting out of the penalty box");
         }
@@ -265,14 +278,14 @@ namespace Trivia.Test
         [Test]
         public void on_second_roll_after_wrong_answer_when_roll_is_odd_player_leaves_penalty_box()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(1);
-            _game.wrongAnswer();
-            _game.roll(1);
-            _game.wrongAnswer();
-            _game.roll(1);
+            _game.Roll(1);
+            _game.WrongAnswer();
+            _game.Roll(1);
+            _game.WrongAnswer();
+            _game.Roll(1);
 
             _console.Received().WriteLine(PlayerJohn + " is getting out of the penalty box");
         }
@@ -280,11 +293,11 @@ namespace Trivia.Test
         [Test]
         public void on_correct_answer_display_correct_answer_messages()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(1);
-            _game.wasCorrectlyAnswered();
+            _game.Roll(1);
+            _game.WasCorrectlyAnswered();
 
             _console.Received().WriteLine("Answer was correct!!!!");
         }
@@ -292,11 +305,11 @@ namespace Trivia.Test
         [Test]
         public void on_correct_answer_display_gold_coins()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(1);
-            _game.wasCorrectlyAnswered();
+            _game.Roll(1);
+            _game.WasCorrectlyAnswered();
 
             _console.Received().WriteLine(PlayerJohn+ " now has 1 Gold Coins.");
         }
@@ -304,15 +317,15 @@ namespace Trivia.Test
         [Test]
         public void on_second_correct_answer_display_increased_gold_coins()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(1);
-            _game.wasCorrectlyAnswered();
-            _game.roll(1);
-            _game.wrongAnswer();
-            _game.roll(1);
-            _game.wasCorrectlyAnswered();
+            _game.Roll(1);
+            _game.WasCorrectlyAnswered();
+            _game.Roll(1);
+            _game.WrongAnswer();
+            _game.Roll(1);
+            _game.WasCorrectlyAnswered();
 
             _console.Received().WriteLine(PlayerJohn + " now has 2 Gold Coins.");
         }
@@ -320,15 +333,15 @@ namespace Trivia.Test
         [Test]
         public void on_a_correct_answer_after_previous_wrong_when_roll_is_odd_display_answer_correct_message()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(1);
-            _game.wrongAnswer();
-            _game.roll(1);
-            _game.wrongAnswer();
-            _game.roll(1);
-            _game.wasCorrectlyAnswered();
+            _game.Roll(1);
+            _game.WrongAnswer();
+            _game.Roll(1);
+            _game.WrongAnswer();
+            _game.Roll(1);
+            _game.WasCorrectlyAnswered();
 
             _console.Received().WriteLine("Answer was correct!!!!");
         }
@@ -336,15 +349,15 @@ namespace Trivia.Test
         [Test]
         public void on_a_correct_answer_after_previous_wrong_when_roll_is_even_does_not_display_answer_correct_message()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(1);
-            _game.wrongAnswer();
-            _game.roll(1);
-            _game.wrongAnswer();
-            _game.roll(2);
-            _game.wasCorrectlyAnswered();
+            _game.Roll(1);
+            _game.WrongAnswer();
+            _game.Roll(1);
+            _game.WrongAnswer();
+            _game.Roll(2);
+            _game.WasCorrectlyAnswered();
 
             _console.DidNotReceive().WriteLine("Answer was correct!!!!");
         }
@@ -352,26 +365,26 @@ namespace Trivia.Test
         [Test]
         public void answer_switches_players()
         {
-            _game.add(PlayerJohn);
-            _game.add(PlayerOliver);
+            _game.AddPlayer(PlayerJohn);
+            _game.AddPlayer(PlayerOliver);
 
-            _game.roll(1);
+            _game.Roll(1);
             _console.Received().WriteLine(PlayerJohn + " is the current player");
 
-            _game.wasCorrectlyAnswered();
-            _game.roll(1);
+            _game.WasCorrectlyAnswered();
+            _game.Roll(1);
             _console.Received().WriteLine(PlayerOliver + " is the current player");
 
-            _game.wrongAnswer();
-            _game.roll(2);
+            _game.WrongAnswer();
+            _game.Roll(2);
             _console.Received().WriteLine(PlayerJohn + " is the current player");
 
-            _game.wasCorrectlyAnswered();
-            _game.roll(2);
+            _game.WasCorrectlyAnswered();
+            _game.Roll(2);
             _console.Received().WriteLine(PlayerOliver + " is the current player");
 
-            _game.wasCorrectlyAnswered();
-            _game.roll(2);
+            _game.WasCorrectlyAnswered();
+            _game.Roll(2);
             _console.Received().WriteLine(PlayerJohn + " is the current player");
         }
     }
