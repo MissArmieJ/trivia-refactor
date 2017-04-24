@@ -6,13 +6,57 @@ namespace Trivia
 {
     public class Player
     {
-        public string Name { get; private set; }
+        private readonly string _name;
+        private int _rollTotal;
+        private int _coinTotal;
+        private bool _inPenaltyBox;
+
+        private readonly Dictionary<int, Category> _categories = new Dictionary<int, Category>
+        {
+            {0, Category.Pop},
+            {1, Category.Science},
+            {2, Category.Sports},
+            {4, Category.Pop},
+            {5, Category.Science},
+            {6, Category.Sports},
+            {8, Category.Pop},
+            {9, Category.Science},
+            {10, Category.Sports},
+        };
+
+        public Player(string name)
+        {
+            _name = name;
+            _rollTotal = 0;
+            _coinTotal = 0;
+            _inPenaltyBox = false;
+        }
+
+        public void UpdateRollTotal(int roll)
+        {
+            _rollTotal += roll;
+
+            if (_rollTotal > 11)
+            {
+                _rollTotal -= 12;
+            }
+        }
+
+        public Category CurrentCategory()
+        {
+           return _categories.ContainsKey(_rollTotal) ? _categories[_rollTotal] : Category.Rock;
+        }
     }
 
     public class Category
     {
         private readonly LinkedList<string> _questions = new LinkedList<string>();
-        private string _name;
+        private readonly string _name;
+
+        public static readonly Category Pop = new Category("Pop");
+        public static readonly Category Rock = new Category("Rock");
+        public static readonly Category Science = new Category("Science");
+        public static readonly Category Sports = new Category("Sports");
 
         public Category(string name)
         {
@@ -43,10 +87,12 @@ namespace Trivia
         private readonly LinkedList<string> _scienceQuestions = new LinkedList<string>();
         private readonly LinkedList<string> _sportsQuestions = new LinkedList<string>();
 
-        private readonly Category _popCategory = new Category("Pop");
-        private readonly Category _rockCategory = new Category("Rock");
-        private readonly Category _scienceCategory = new Category("Science");
-        private readonly Category _sportsCategory = new Category("Sports");
+        private List<Player> _altPlayers = new List<Player>();
+
+        private readonly Category _popCategory = Category.Pop;
+        private readonly Category _rockCategory = Category.Rock;
+        private readonly Category _scienceCategory = Category.Science;
+        private readonly Category _sportsCategory = Category.Sports;
 
         public Game()
         {
@@ -59,6 +105,10 @@ namespace Trivia
 
         public bool AddPlayer(string name)
         {
+            Player player = new Player(name);
+            _altPlayers.Add(player);
+
+            //#################################
             _players.Add(name);
             _playerCategories[NumberOfPlayers] = 0;
             _playerCoins[NumberOfPlayers] = 0;
@@ -96,7 +146,7 @@ namespace Trivia
 
         private void AskNextQuestion(int roll)
         {
-            UpdatePlayerPlace(roll);
+            UpdatePlayerCategory(roll);
 
             Display(_players[_currentPlayer] + "'s new location is " + _playerCategories[_currentPlayer]);
             Display("The category is " + CurrentCategory());
@@ -120,7 +170,7 @@ namespace Trivia
             }
         }
 
-        private void UpdatePlayerPlace(int roll)
+        private void UpdatePlayerCategory(int roll)
         {
             _playerCategories[_currentPlayer] = _playerCategories[_currentPlayer] + roll;
 
@@ -156,11 +206,8 @@ namespace Trivia
 
         private string CurrentCategory()
         {
-            return GetCategoryFor(_playerCategories[_currentPlayer]);
-        }
+            int playerCategory = _playerCategories[_currentPlayer];
 
-        private string GetCategoryFor(int i)
-        {
             Dictionary<int, string> categories = new Dictionary<int, string>
             {
                 {0, "Pop"},
@@ -174,7 +221,7 @@ namespace Trivia
                 {10, "Sports"},
             };
 
-            return categories.ContainsKey(i) ? categories[i] : "Rock";
+            return categories.ContainsKey(playerCategory) ? categories[playerCategory] : "Rock";
         }
 
         public bool WasCorrectlyAnswered()
